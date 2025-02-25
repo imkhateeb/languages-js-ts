@@ -5,16 +5,21 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const authMap = new Map();
+const globalMap = new Map();
+
 const globalRateLimiter = rateLimiter({
     windowMs: 1000*60,
     totalToken: 10,
     message: "Too many request on global code",
+    mapping: globalMap
 })
 
 const authRateLimiter = rateLimiter({
     windowMs: 1000*60,
     totalToken: 5,
     message: "Too many request on authentication rate",
+    mapping: authMap
 })
 
 

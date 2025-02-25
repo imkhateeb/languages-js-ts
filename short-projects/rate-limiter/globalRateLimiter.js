@@ -1,17 +1,17 @@
 const fs = require("fs")
 
-const mapping = new Map();
-
-const logRequest = (reqMade) => {
-    fs.appendFile("./logs", `LOG-${Date.now()}: Request made - ${reqMade}\n`, (err) => {});
+const logRequest = (reqMade, reqUrl) => {
+    fs.appendFile("./logs", `LOG-${Date.now()}: Request made - ${reqMade}\n, URL - ${reqUrl}`, (err) => {});
 }
 
-const rateLimiter = ({windowMs, totalToken, message}) => {
+const rateLimiter = ({windowMs, totalToken, message, mapping}) => {
+
 
     return (req, res, next) => {
+        const reqUrl = req.url.path;
         let ipAddr = JSON.stringify(req.ip);
         const metadata = mapping.get(ipAddr);
-        logRequest(metadata?.tokenUsed || 0);
+        logRequest(metadata?.tokenUsed || 0, reqUrl);
         if (mapping.has(ipAddr)) {
             if (metadata.expiry > Date.now()) {
                 if (metadata.tokenUsed >= totalToken) {
